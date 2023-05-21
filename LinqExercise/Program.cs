@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Pipes;
 using System.Linq;
 
 namespace LinqExercise
@@ -70,35 +71,35 @@ namespace LinqExercise
             var employees = CreateEmployees();
 
             //TODO: Print all the employees' FullName properties to the console only if their FirstName starts with a C OR an S and order this in ascending order by FirstName.
-            Console.WriteLine();
-            employees.Where(x => x.FirstName.StartsWith('C') || x.FirstName.StartsWith('S')).OrderBy(x => x.FirstName).ToList().ForEach(x => Console.WriteLine(x.FullName));
-
+            var filtered = employees.Where(person => person.FirstName.StartsWith('C') || person.FirstName.StartsWith('S')).OrderBy(person => person.FirstName);
+            Console.WriteLine("C or S Employees");
+            foreach (var employee in filtered)
+            {
+                Console.WriteLine(employee.FullName);
+            }
             //TODO: Print all the employees' FullName and Age who are over the age 26 to the console and order this by Age first and then by FirstName in the same result.
-            Console.WriteLine();
-            Console.WriteLine("Employees over 26 years old: ");
-            employees.Where(x => x.Age > 26).OrderBy(x => x.Age).ThenBy(x => x.FirstName).ToList().ForEach(x => Console.WriteLine($"Full Name: {x.FullName} Age: {x.Age}"));
+            var overTwentySix = employees.Where(emp => emp.Age > 26).OrderBy(emp => emp.Age).ThenBy(emp => emp.FirstName).ThenBy(emp => emp.YearsOfExperience);
+            {
+                Console.WriteLine("Over 26");
+                foreach (var person in overTwentySix) 
+                {
+                    Console.WriteLine($"Fullname: {person.FullName} Age: {person.Age} YOE:{person.YearsOfExperience}");
+                }
+            }
 
             //TODO: Print the Sum and then the Average of the employees' YearsOfExperience if their YOE is less than or equal to 10 AND Age is greater than 35.
-            Console.WriteLine("Sum of YOE: ");
-            int employeeSum = employees.Where(x => x.YearsOfExperience <= 10 && x.Age > 35).Sum(x => x.YearsOfExperience);
-            Console.WriteLine(employeeSum);
-            Console.WriteLine();
-            Console.WriteLine("Average of YOE: ");
-            double employeeAverage = employees.Where(x => x.YearsOfExperience <= 10 && x.Age > 35).Average(x => x.YearsOfExperience);
-            Console.WriteLine();
+            var yoeEmployees = employees.Where(x => x.YearsOfExperience <= 10 && x.Age > 35);
+            
+            var sumOfYOE = yoeEmployees.Sum(emp => emp.YearsOfExperience);
+            var avgOfYOE = yoeEmployees.Average(emp => emp.YearsOfExperience);
+            Console.WriteLine($"Sum {sumOfYOE} Avg {avgOfYOE}");
 
             //TODO: Add an employee to the end of the list without using employees.Add()
-            Employee newEmployee = new Employee();
-            newEmployee.FirstName = "Alen";
-            newEmployee.LastName = "V";
-            newEmployee.YearsOfExperience = 5;
+            employees = employees.Append(new Employee("first", "lastNAme", 98, 1)).ToList();
 
-            employees.Append(newEmployee); //ToList().ForEach(x => Console.WriteLine(x.FullName));
-            Console.WriteLine();
-            Console.WriteLine("Original List");
-            foreach (var item in employees)
+            foreach (var emp in yoeEmployees)
             {
-                Console.WriteLine(item.FullName);
+                Console.WriteLine($"{emp.FirstName} {emp.Age}");
             }
 
             Console.WriteLine();
